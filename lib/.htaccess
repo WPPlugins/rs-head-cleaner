@@ -1,0 +1,42 @@
+# RS Head Cleaner - Cache .htaccess
+# Version 1.4.1
+
+# Cache, Expiration, and Compression
+
+<IfModule mod_headers.c>
+	Header set Vary "Accept-Encoding"
+	Header set Cache-Control "max-age=15552000, must-revalidate"
+</IfModule>
+
+# Using Files instead of FilesMatch for compatibility with certain branches of Apache
+
+<IfModule mod_expires.c>
+	ExpiresActive On
+	<Files ~ "^(.+)\.(css/js)$">
+		ExpiresDefault "access plus 1 year"
+	</Files>
+	ExpiresByType text/css "access plus 1 year"
+	ExpiresByType text/javascript "access plus 1 year"
+	ExpiresByType application/javascript "access plus 1 year"
+</IfModule>
+
+<IfModule mod_deflate.c>
+	<Files ~ "^(.+)\.(css/js)$">
+		SetOutputFilter DEFLATE
+	</Files>
+	AddOutputFilterByType DEFLATE text/css
+	AddOutputFilterByType DEFLATE text/javascript
+	AddOutputFilterByType DEFLATE application/javascript
+</IfModule>
+
+<Files ~ "^(.+)\.(css/js)$">
+	# Apache 2.2
+	<IfModule !mod_authz_core.c>
+		Order Allow,Deny
+		Allow from all
+	</IfModule>
+	# Apache 2.4
+	<IfModule mod_authz_core.c>
+		Require all granted
+	</IfModule>
+</Files>
